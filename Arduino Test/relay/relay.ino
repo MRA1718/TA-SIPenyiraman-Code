@@ -1,5 +1,5 @@
 // constants won't change
-const int RELAY_PIN = 5;  // the Arduino pin, which connects to the IN pin of relay
+const int RELAY_PIN = 8;  // the Arduino pin, which connects to the IN pin of relay
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -8,12 +8,25 @@ void setup() {
   pinMode(RELAY_PIN, OUTPUT);
 }
 
+char txt = 0;
+
 // the loop function runs over and over again forever
 void loop() {
-  digitalWrite(RELAY_PIN, HIGH);
+  if (Serial.available() > 0) {
+    txt = Serial.read();
+
+    if (txt == '1')  {
+      digitalWrite(RELAY_PIN, HIGH);
+      Serial.println("ON");
+    } else if (txt == '0')  {
+      digitalWrite(RELAY_PIN, LOW);
+      Serial.println("OFF");
+    }
+  }
+  /*digitalWrite(RELAY_PIN, HIGH);
   Serial.println("ON");
   delay(5000);
   digitalWrite(RELAY_PIN, LOW);
   Serial.println("OFF");
-  delay(5000);
+  delay(5000);*/
 }
