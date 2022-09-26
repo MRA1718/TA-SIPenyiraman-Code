@@ -1,16 +1,16 @@
 #include "CTBot.h"
 CTBot myBot;
 
-String ssid = "Home_9";
-String pass = "Farisan2002";
-String token = ""; 
+const char* ssid = "Home_9";
+const char* pass = "Farisan2002";
+const char*  token = "5482210965:AAF14_XCsdEoVlgjZL7rZpY5qf_twebh4IA";
 
 String data;
 char c;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Starting TelegramBot...");
+  Serial.println("\nStarting TelegramBot...");
 
   myBot.wifiConnect(ssid, pass);
 
@@ -20,7 +20,7 @@ void setup() {
   if (myBot.testConnection())
     Serial.println("\ntestConnection OK");
   else
-    Serial.println("\ntestConnection NOK");
+    Serial.println("\ntestConnection FAILED");
 
 }
 
@@ -29,31 +29,24 @@ void loop() {
 
   if (myBot.getNewMessage(msg)) {
 
-    if (msg.text.equalsIgnoreCase("RELAY ON")) {              
-      myBot.sendMessage(msg.sender.id, "RELAY is now ON");  //kirim pesan ke bot telegram
-      Serial.print("RELAY ON");
+    if (msg.text.equalsIgnoreCase("RELAY START")) {
+      myBot.sendMessage(msg.sender.id, "RELAY is now STARTING");  //kirim pesan ke bot telegram
+      Serial.print("RELAY START");
     }
-    else if (msg.text.equalsIgnoreCase("RELAY OFF")) {        
-      myBot.sendMessage(msg.sender.id, "RELAY is now OFF"); 
-      Serial.print("RELAY OFF");
-    }
-    else if (msg.text.equalsIgnoreCase("TEMPERATURE")) {
-      Serial.print("TEMPERATURE");
-    }
-    else {                                                    
+    else {
       // membalas pesan selain kode diatas
       String reply;
       reply = (String)"Welcome " + msg.sender.username + (String)". Command: RELAY ON, RELAY OFF, TEMPERATURE.";
-      myBot.sendMessage(msg.sender.id, reply);         
+      myBot.sendMessage(msg.sender.id, reply);
     }
   }
-  
-  while(Serial.available()>0){
+
+  while (Serial.available() > 0) {
     delay(10);
     c = Serial.read();
     data += c;
   }
-  if (data.length()>0) {
+  if (data.length() > 0) {
     myBot.sendMessage(msg.sender.id, data + " Celcius Degrees");
     delay(10);
     data = "";
