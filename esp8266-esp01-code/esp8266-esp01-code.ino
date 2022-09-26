@@ -1,9 +1,9 @@
 #include "CTBot.h"
 CTBot myBot;
 
-String ssid = "Home_9";
-String pass = "Farisan2002";
-String token = "5482210965:AAF14_XCsdEoVlgjZL7rZpY5qf_twebh4IA";
+const char* ssid = "Home_9";
+const char* pass = "Farisan2002";
+const char*  token = "5482210965:AAF14_XCsdEoVlgjZL7rZpY5qf_twebh4IA";
 
 String data;
 char c;

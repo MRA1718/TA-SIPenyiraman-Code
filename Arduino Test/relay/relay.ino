@@ -18,10 +18,13 @@ void loop() {
     if (txt == '1')  {
       digitalWrite(RELAY_PIN, HIGH);
       Serial.println("ON");
-    } else if (txt == '0')  {
+      delay(180000);
       digitalWrite(RELAY_PIN, LOW);
       Serial.println("OFF");
-    }
+    } /*else if (txt == '0')  {
+      digitalWrite(RELAY_PIN, LOW);
+      Serial.println("OFF");
+    }*/
   }
   /*digitalWrite(RELAY_PIN, HIGH);
   Serial.println("ON");
