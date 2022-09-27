@@ -2,20 +2,13 @@
 SoftwareSerial mySerial(2,3);
 String data;
 char c;
-const int relay = 13;
-
-int lm35 = A0;
-int val;
-float mv;
-float temp;
+const int RELAY_PIN = 8;
 
 void setup() {
   Serial.begin(115200);
   mySerial.begin(115200);
   pinMode(relay, OUTPUT);
-  digitalWrite(relay, HIGH);
-  delay(10);
-}
+ }
 
 void loop() {
   while(mySerial.available()>0){
@@ -25,20 +18,12 @@ void loop() {
   }  
   if (data.length()>0) {
     Serial.println(data);
-    if (data == "RELAY ON") {
-      digitalWrite(relay, LOW);
-      Serial.println("RELAY ON");
-    } 
-    else if (data == "RELAY OFF") {
-      digitalWrite(relay, HIGH);
-      Serial.println("RELAY OFF");
-    } 
-    else if (data == "TEMPERATURE") {
-      val = analogRead(lm35);
-      mv = (val/1024.00)*5000;
-      temp = mv/10;
-      mySerial.print(temp);
-      Serial.println(temp);
+    if (data == "RELAY START") {
+      digitalWrite(RELAY_PIN, HIGH);
+      Serial.println("RELAY STARTING");
+      delay(180000);
+      digitalWrite(RELAY_PIN, LOW);
+      Serial.println("RELAY STOP");
     }
     data = "";
   }
