@@ -7,7 +7,7 @@ const int RELAY_PIN = 8;
 void setup() {
   Serial.begin(115200);
   mySerial.begin(115200);
-  pinMode(relay, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
  }
 
 void loop() {

@@ -5,6 +5,9 @@ String ssid  = "Home_9"    ; // REPLACE mySSID WITH YOUR WIFI SSID
 String pass  = "Farisan2002"; // REPLACE myPassword YOUR WIFI PASSWORD, IF ANY
 String token = "5716967301:AAHY8BOMNbgSd65c2yocwCQGESGQ9gvTUKs"   ; // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
 
+String data;
+char c;
+
 void setup() {
   // initialize the Serial
   Serial.begin(115200);
