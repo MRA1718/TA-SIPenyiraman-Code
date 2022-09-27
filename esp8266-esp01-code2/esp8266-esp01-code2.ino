@@ -24,14 +24,31 @@ void setup() {
 }
 
 void loop() {
-  // a variable to store telegram message data
   TBMessage msg;
 
-  // if there is an incoming message...
-  if (CTBotMessageText == myBot.getNewMessage(msg))
-    // ...forward it to the sender
-    myBot.sendMessage(msg.sender.id, msg.text);
-   
-  // wait 500 milliseconds
+  if (myBot.getNewMessage(msg)) {
+
+    if (msg.text.equalsIgnoreCase("RELAY START")) {              
+      myBot.sendMessage(msg.sender.id, "RELAY is now STARTING");  //kirim pesan ke bot telegram
+      Serial.print("RELAY START");
+    } else {                                                    
+      // membalas pesan selain kode diatas
+      String reply;
+      reply = (String)"Welcome " + msg.sender.username + (String)". Command: RELAY START.";
+      myBot.sendMessage(msg.sender.id, reply);         
+    }
+  }
+  
+  while(Serial.available()>0){
+    delay(10);
+    c = Serial.read();
+    data += c;
+  }
+  if (data.length()>0) {
+    myBot.sendMessage(msg.sender.id, data);
+    delay(10);
+    data = "";
+  }
+
   delay(500);
 }
