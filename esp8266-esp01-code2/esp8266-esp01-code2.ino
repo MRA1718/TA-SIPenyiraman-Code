@@ -3,7 +3,7 @@ CTBot myBot;
 
 String ssid  = "Home_9"    ; // REPLACE mySSID WITH YOUR WIFI SSID
 String pass  = "Farisan2002"; // REPLACE myPassword YOUR WIFI PASSWORD, IF ANY
-String token = "5482210965:AAF14_XCsdEoVlgjZL7rZpY5qf_twebh4IA"   ; // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
+String token = "5716967301:AAHY8BOMNbgSd65c2yocwCQGESGQ9gvTUKs"   ; // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
 
 void setup() {
   // initialize the Serial
