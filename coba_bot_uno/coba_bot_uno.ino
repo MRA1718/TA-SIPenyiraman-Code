@@ -15,15 +15,15 @@ void loop() {
     delay(10);
     c = mySerial.read();
     data += c;
-  }  
+  }   
   if (data.length()>0) {
     Serial.println(data);
     if (data == "RELAY START") {
       digitalWrite(RELAY_PIN, HIGH);
-      Serial.println("RELAY STARTING");
+      mySerial.print("RELAY ON");
       delay(180000);
       digitalWrite(RELAY_PIN, LOW);
-      Serial.println("RELAY STOP");
+      mySerial.print("RELAY OFF");
     }
     data = "";
   }
