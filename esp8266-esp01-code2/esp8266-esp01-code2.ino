@@ -31,10 +31,11 @@ void loop() {
 
   if (myBot.getNewMessage(msg)) {
 
-    if (msg.text.equalsIgnoreCase("RELAY START")) {              
+    if (msg.text.equalsIgnoreCase("START PUMP")) {              
       myBot.sendMessage(msg.sender.id, "RELAY is now STARTING");  //kirim pesan ke bot telegram
       Serial.print("RELAY START");
-    } else {                                                    
+    } else 
+    if (msg.text.equalsIgnoreCase("/start")){                                                    
       // membalas pesan selain kode diatas
       String reply;
       reply = (String)"Welcome " + msg.sender.username + (String)". Command: RELAY START.";

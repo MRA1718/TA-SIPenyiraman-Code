@@ -17,7 +17,12 @@ void loop() {
     data += c;
   }   
   if (data.length()>0) {
-    Serial.println(data);
+    //Serial.println(data);
+
+    int data_len = data.length() + 1;
+    char data_array[data_len];
+    data.toCharArray(data_array, data_len);
+    
     if (data == "RELAY START") {
       digitalWrite(RELAY_PIN, HIGH);
       mySerial.print("RELAY ON");
