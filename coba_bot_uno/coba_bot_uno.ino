@@ -17,18 +17,13 @@ void loop() {
     data += c;
   }   
   if (data.length()>0) {
-    //Serial.println(data);
-
-    int data_len = data.length() + 1;
-    char data_array[data_len];
-    data.toCharArray(data_array, data_len);
-    
-    if (data == "RELAY START") {
+    Serial.println(data);
+    if (data == "nyalakan pompa") {
       digitalWrite(RELAY_PIN, HIGH);
-      mySerial.print("RELAY ON");
+      mySerial.print("pompa menyala");
       delay(180000);
       digitalWrite(RELAY_PIN, LOW);
-      mySerial.print("RELAY OFF");
+      mySerial.print("pompa mati");
     }
     data = "";
   }

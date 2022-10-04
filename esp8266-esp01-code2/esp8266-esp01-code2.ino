@@ -3,7 +3,7 @@ CTBot myBot;
 
 String ssid  = "Home_9"    ; // REPLACE mySSID WITH YOUR WIFI SSID
 String pass  = "Farisan2002"; // REPLACE myPassword YOUR WIFI PASSWORD, IF ANY
-String token = "5716967301:AAHY8BOMNbgSd65c2yocwCQGESGQ9gvTUKs"   ; // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
+String token = "5725314127:AAHxruba6S34B0He6rQ8vVRlJ6IZ_0ucgQ4"   ; // REPLACE myToken WITH YOUR TELEGRAM BOT TOKEN
 
 String data;
 char c;
@@ -31,14 +31,14 @@ void loop() {
 
   if (myBot.getNewMessage(msg)) {
 
-    if (msg.text.equalsIgnoreCase("START PUMP")) {              
-      myBot.sendMessage(msg.sender.id, "RELAY is now STARTING");  //kirim pesan ke bot telegram
-      Serial.print("RELAY START");
+    if (msg.text.equalsIgnoreCase("nyalakan pompa")) {              
+      myBot.sendMessage(msg.sender.id, "pompa akan menyala selama 3 menit");  //kirim pesan ke bot telegram
+      Serial.print("nyalakan pompa");
     } else 
     if (msg.text.equalsIgnoreCase("/start")){                                                    
       // membalas pesan selain kode diatas
       String reply;
-      reply = (String)"Welcome " + msg.sender.username + (String)". Command: RELAY START.";
+      reply = (String)"Halo " + msg.sender.username + (String)". Perintah: nyalakan pompa.";
       myBot.sendMessage(msg.sender.id, reply);         
     }
   }
