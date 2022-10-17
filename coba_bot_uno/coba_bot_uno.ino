@@ -9,10 +9,10 @@ const int sTanah2_pin = A1;
 int dsTanah1, dsTanah2;
 
 int sTanah(int dTanah) {
-  if(dtanah == 1){
+  if(dTanah == 1){
     analogRead(sTanah1_pin);
   } else
-  if(dtanah == 2){
+  if(dTanah == 2){
     analogRead(sTanah2_pin);
   }
 }
@@ -20,7 +20,8 @@ int sTanah(int dTanah) {
 void setup() {
   Serial.begin(115200);
   mySerial.begin(115200);
-  pinMode(RELAY_PIN, OUTPUT);
+  pinMode(relay_pin, OUTPUT);
+  pinMode(power_sTanah, OUTPUT);
  }
 
 void loop() {
@@ -39,11 +40,13 @@ void loop() {
       mySerial.print("pompa mati");
     } else
     if (data == "sensor tanah") {
+      String rep;
       digitalWrite(power_sTanah, HIGH);
       dsTanah1 = sTanah(1); 
       dsTanah2 = sTanah(2);
       digitalWrite(power_sTanah, LOW);
-      mySerial.print("sensor tanah 1: " + dsTanah1 + ", sensor tanah 2: " + dsTanah2);
+      rep = (String) "sensor tanah 1: " + dsTanah1 + ", sensor tanah 2: " + dsTanah2;
+      mySerial.print(rep);
     }
     data = "";
   }
