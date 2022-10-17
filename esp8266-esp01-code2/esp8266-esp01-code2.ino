@@ -15,7 +15,7 @@ void setup() {
 
   // connect the ESP8266 to the desired access point
   myBot.wifiConnect(ssid, pass);
-
+  //myBot.setIP("192.168.1.111", "192.168.1.1", "255.255.255.0");
   // set the telegram bot token
   myBot.setTelegramToken(token);
   
