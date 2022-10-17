@@ -30,11 +30,13 @@ void loop() {
   TBMessage msg;
 
   if (myBot.getNewMessage(msg)) {
-
     if (msg.text.equalsIgnoreCase("nyalakan pompa")) {              
       myBot.sendMessage(msg.sender.id, "pompa akan menyala selama 3 menit");  //kirim pesan ke bot telegram
       Serial.print("nyalakan pompa");
     } else 
+    if (msg.text.equalsIgnoreCase("sensor tanah"))  {
+      myBot.sendMessage(msg.sender.id, "membaca sensor tanah");
+    } else
     if (msg.text.equalsIgnoreCase("/start")){                                                    
       // membalas pesan selain kode diatas
       String reply;
