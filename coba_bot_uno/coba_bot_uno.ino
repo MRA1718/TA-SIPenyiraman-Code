@@ -9,11 +9,20 @@ const int sTanah2_pin = A1;
 int dsTanah1, dsTanah2;
 
 int sTanah(int dTanah) {
+  int res;
   if(dTanah == 1){
-    analogRead(sTanah1_pin);
+    digitalWrite(power_sTanah, HIGH);
+    delay(5000);
+    res = analogRead(sTanah1_pin);
+    digitalWrite(power_sTanah, LOW);
+    return res;
   } else
   if(dTanah == 2){
-    analogRead(sTanah2_pin);
+    digitalWrite(power_sTanah, HIGH);
+    delay(5000);
+    res = analogRead(sTanah2_pin);
+    digitalWrite(power_sTanah, LOW);
+    return res;
   }
 }
 
@@ -41,10 +50,10 @@ void loop() {
     } else
     if (data == "sensor tanah") {
       String rep;
-      digitalWrite(power_sTanah, HIGH);
+      //digitalWrite(power_sTanah, HIGH);
       dsTanah1 = sTanah(1); 
       dsTanah2 = sTanah(2);
-      digitalWrite(power_sTanah, LOW);
+      //digitalWrite(power_sTanah, LOW);
       rep = (String) "sensor tanah 1: " + dsTanah1 + ", sensor tanah 2: " + dsTanah2;
       mySerial.print(rep);
     }
