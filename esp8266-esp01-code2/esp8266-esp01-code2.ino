@@ -38,6 +38,14 @@ void loop() {
       myBot.sendMessage(msg.sender.id, "membaca sensor tanah");
       Serial.print("sensor tanah");
     } else
+    if (msg.text.equalsIgnoreCase("sensor suhu"))  {
+      myBot.sendMessage(msg.sender.id, "membaca sensor suhu dan kelembaban");
+      Serial.print("sensor SH");
+    } else
+    if (msg.text.equalsIgnoreCase("sensor cahaya"))  {
+      myBot.sendMessage(msg.sender.id, "membaca sensor cahaya");
+      Serial.print("sensor cahaya");
+    } else
     if (msg.text.equalsIgnoreCase("/start")){                                                    
       // membalas pesan selain kode diatas
       String reply;
