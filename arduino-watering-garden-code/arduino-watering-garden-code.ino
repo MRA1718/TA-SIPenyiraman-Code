@@ -5,7 +5,7 @@ SoftwareSerial mySerial(2,3);
 DFROBOT_DHT20 dht20;
 String data, rep;
 char c;
-const int relay_pin     = 8;
+//const int relay_pin     = 8;
 const int power_sTanah  = 9;
 const int power_sSuhu   = 10;
 const int power_sCahaya = 11;
@@ -18,6 +18,7 @@ float dsSuhu1, dsSuhu2;
 int dsCahaya;
 int res;
 
+//Sensor Tanah
 int senTanah(int dTanah) {
   int resTanah;
   //Sensor Tanah 1
@@ -37,8 +38,8 @@ int senTanah(int dTanah) {
     return resTanah;
   }
 }
-
-int senSuhu(int dSuhu)  {
+//Sensor Suhu & Kelembaban
+float senSuhu(int dSuhu)  {
   float resSuhu;
   //Suhu
   if(dSuhu == 1){
@@ -56,6 +57,14 @@ int senSuhu(int dSuhu)  {
     digitalWrite(power_sSuhu, LOW);
     return resSuhu;
   }
+}
+
+//Sensor Cahaya
+int senCahaya() {
+  int resCahaya;
+
+  resCahaya = analogRead(A2);
+  return resCahaya;
 }
 
 void setup() {
@@ -77,13 +86,13 @@ void loop() {
   }   
   if (data.length()>0) {
     Serial.println(data);
-    if (data == "nyalakan pompa") {
+    /*if (data == "nyalakan pompa") {
       digitalWrite(relay_pin, HIGH);
       mySerial.print("pompa menyala");
       delay(180000);
       digitalWrite(relay_pin, LOW);
       mySerial.print("pompa mati");
-    } else
+    } else */
     if (data == "sensor tanah") {
       //digitalWrite(power_sTanah, HIGH);
       dsTanah1 = senTanah(1); 
