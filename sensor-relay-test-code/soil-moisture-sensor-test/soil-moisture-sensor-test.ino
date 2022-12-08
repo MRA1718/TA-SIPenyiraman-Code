@@ -44,4 +44,6 @@ void loop() {
   }
 
   digitalWrite(p_sTanah, LOW);
+
+  exit(0);
 }
