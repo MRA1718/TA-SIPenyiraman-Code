@@ -36,9 +36,9 @@ void loop() {
   delay(1000);
   
   while(x<10) {
-    print(senTanah(1);
-    print(" ");
-    println(senTanah(2);
+    Serial.print(senTanah(1));
+    Serial.print(" ");
+    Serial.println(senTanah(2));
     x = x + 1;
     delay(1000);
   }
