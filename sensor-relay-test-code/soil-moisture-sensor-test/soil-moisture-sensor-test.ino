@@ -7,18 +7,12 @@ int senTanah(int dTanah) {
   int resTanah;
   //Sensor Tanah 1
   if(dTanah == 1){
-    //digitalWrite(p_sTanah, HIGH);
-    //delay(1000);
     resTanah = analogRead(pin_sTanah1);
-    //digitalWrite(p_sTanah, LOW);
     return resTanah;
   } else
   //Sensor Tanah 2
   if(dTanah == 2){
-    //digitalWrite(p_sTanah, HIGH);
-    //delay(5000);
     resTanah = analogRead(pin_sTanah2);
-    //digitalWrite(p_sTanah, LOW);
     return resTanah;
   }
 }
