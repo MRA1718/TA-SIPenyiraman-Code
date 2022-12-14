@@ -1,45 +1,50 @@
-import sys
 import time
+import random
+import datetime
 import telepot
+import RPi.GPIO as GPIO
 from telepot.loop import MessageLoop
-from telepot.delegate import per_inline_from_id, create_open, pave_event_space
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+pinRelay = 17
+GPIO.setup(pinRelay, GPIO.OUT)
+pumpFlag = 0
 """
-$ python3.5 inline.py <token>
-It demonstrates answering inline query and getting chosen inline results.
+def relay():
+    global pumpFlag
+    
+    GPIO.output(pinRelay, GPIO.HIGH)
+    pumpFlag = 1
+    time.sleep(180)
+    GPIO.output(pinRelay, GPIO.LOW)
+    pumpFlag = 0
 """
+def handle(msg):
+    chat_id = msg['chat']['id']
+    command = msg['text']
+    global pumpFlag
 
-class InlineHandler(telepot.helper.InlineUserHandler, telepot.helper.AnswererMixin):
-    def __init__(self, *args, **kwargs):
-        super(InlineHandler, self).__init__(*args, **kwargs)
+    print ('Got command: %s' % command)
 
-    def on_inline_query(self, msg):
-        def compute_answer():
-            query_id, from_id, query_string = telepot.glance(msg, flavor='inline_query')
-            print(self.id, ':', 'Inline Query:', query_id, from_id, query_string)
+    if command == '/pompa':
+        if pumpFlag == 0:
+            bot.sendMessage(chat_id, 'Menyalakan pompa selama 3 menit.')
+            print('1st msg')
+            GPIO.output(pinRelay, GPIO.HIGH)
+            pumpFlag = 1
+            time.sleep(180)
+            GPIO.output(pinRelay, GPIO.LOW)
+            pumpFlag = 0
+            bot.sendMessage(chat_id, 'Mematikan pompa, penyiraman selesai')
+        else:
+            bot.sendMessage(chat_id, 'Pompa sedang menyala')
+            print('2nd msg')
 
-            articles = [{'type': 'article',
-                             'id': 'abc', 'title': query_string, 'message_text': query_string}]
+bot = telepot.Bot('5725314127:AAHxruba6S34B0He6rQ8vVRlJ6IZ_0ucgQ4')
 
-            return articles
-
-        self.answerer.answer(msg, compute_answer)
-
-    def on_chosen_inline_result(self, msg):
-        from pprint import pprint
-        pprint(msg)
-        result_id, from_id, query_string = telepot.glance(msg, flavor='chosen_inline_result')
-        print(self.id, ':', 'Chosen Inline Result:', result_id, from_id, query_string)
-
-
-TOKEN = sys.argv[1]
-
-bot = telepot.DelegatorBot(TOKEN, [
-    pave_event_space()(
-        per_inline_from_id(), create_open, InlineHandler, timeout=10),
-])
-MessageLoop(bot).run_as_thread()
-print('Listening ...')
+MessageLoop(bot, handle).run_as_thread()
+print ('I am listening ...')
 
 while 1:
     time.sleep(10)
