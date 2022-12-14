@@ -1,7 +1,6 @@
 #include <DFRobot_DHT20.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(2,3);
 DFROBOT_DHT20 dht20;
 String data, rep;
 char c;
