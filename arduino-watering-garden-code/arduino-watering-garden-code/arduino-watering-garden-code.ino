@@ -38,11 +38,11 @@ float senTempt(int dTempt) {
   float rTempt;
   
   if(dTempt == 1) {
-    rTempt = dht20.getTemperature();
+    rTempt = (dht20.getTemperature());
     return rTempt;
   } else
   if(dTempt == 2) {
-    rTempt = dht20.getHumidity()*100;
+    rTempt = (dht20.getHumidity()*100);
     return rTempt;
   }
 }
@@ -57,11 +57,11 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   if(Serial.available() > 0) {
-    data = Serial.readStringUntil('\n'); 
-  }
-  if(data == "collectData") {
+    data = Serial.readStringUntil('\n');
+    
+    if(data == "collectData") {
     digitalWrite(power, HIGH);
-    //delay(10);
+    delay(500);
     
     //fetch data Soil Sensor
     s1 = senSoil(1);
@@ -84,6 +84,7 @@ void loop() {
 
     serializeJson(doc, Serial);
     Serial.println();
-    //delay(1000);
-  }
+    delay(1000);
+    } 
+  } 
 }

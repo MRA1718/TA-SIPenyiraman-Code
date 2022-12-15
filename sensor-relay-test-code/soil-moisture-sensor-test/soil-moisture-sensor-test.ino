@@ -27,17 +27,17 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   digitalWrite(p_sTanah, HIGH);
-  delay(1000);
+  delay(500);
   
-  while(x<10) {
+  while(true) {
     Serial.print(senTanah(1));
     Serial.print(" ");
     Serial.println(senTanah(2));
-    x = x + 1;
+    //x = x + 1;
     delay(1000);
   }
 
   digitalWrite(p_sTanah, LOW);
 
-  exit(0);
+  //exit(0);
 }
