@@ -65,7 +65,11 @@ def handle(msg):
             bot.sendMessage(chat_id, 'Pompa sedang menyala')
     elif command == '/sensor':
         sData = dataFetch()
-        sMsg = "Sensor Tanah 1: " + str(sData.get("soil1")) + "\nSensor Tanah 2: " + str(sData.get("soil2"))
+        sMsg = "Sensor Tanah 1: " + str(sData.get("soil1")) + \
+            "\nSensor Tanah 2: " + str(sData.get("soil2")) + \
+            "\nSuhu: " + (("%.2f") % sData.get("temp")) + \
+            "C\nKelembaban: " + (("%.2f") % sData.get("humidity")) + \
+            "RH\nSensor Cahaya: " + str(sData.get("light"))
         print(sMsg)
         bot.sendMessage(chat_id, sMsg)
     else:
