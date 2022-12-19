@@ -4,8 +4,10 @@ import threading
 import RPi.GPIO as GPIO
 import json
 import serial
+import schedule
 from datetime import datetime
 from telebot import custom_filters
+from telebot import TeleBot
 
 TOKEN = '5725314127:AAHxruba6S34B0He6rQ8vVRlJ6IZ_0ucgQ4'
 GROUP_ID = -675364128
@@ -50,14 +52,14 @@ def dataFetch():
         except json.JSONDecodeError as e:
             ("JSON:", e)
         #i += 1
-        #time.sleep(1)
 
 #Initialize Telebot API
 bot = telebot.TeleBot(TOKEN)
 
-bot.send_message(GROUP_ID, "Bot aktif, silahkan masukkan command (/pompa, /sensor)")
+bot.send_message(GROUP_ID, "Bot aktif, silahkan masukkan command: \
+    (/pompa, /sensor, /modeotomatis)")
 
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=['help', 'start', 'modeotomatis'])
 def send_welcome(message):
     bot.send_message(message.chat.id, "Bot aktif, silahkan masukkan command (/pompa, /sensor)")
     #print(message)
@@ -66,14 +68,20 @@ def send_welcome(message):
 @bot.message_handler(commands=['pompa'])
 def pumpHandle(message):
     global relayStatus
-    
-    if relayStatus == 0:
-        bot.send_message(message.chat.id, 'Menyalakan pompa selama 3 menit.')
-        relayOn()
-        relayTimer = threading.Timer(180.0, relayOff, args=[message.chat.id])
-        relayTimer.start()
-    elif relayStatus == 1:
-        bot.send_message(message.chat.id, 'Pompa sedang menyala')
+    args = message.text.split()
+
+    if len(args) > 1 and args[1].isdigit():
+        minutes = (args[1])
+        sec = int(minutes)*60
+        if relayStatus == 0:
+            bot.send_message(message.chat.id, 'Menyalakan pompa selama ' + minutes + ' menit.' )
+            relayOn()
+            relayTimer = threading.Timer(sec, relayOff, args=[message.chat.id])
+            relayTimer.start()
+        elif relayStatus == 1:
+            bot.send_message(message.chat.id, 'Pompa sedang menyala')
+    else:
+        bot.send_message(message.chat.id, "Penggunaan: /pompa <menit>")
 
 @bot.message_handler(commands=['sensor'])
 def sensorHandle(message):
@@ -85,6 +93,8 @@ def sensorHandle(message):
             "RH\nSensor Cahaya: " + str(sData.get("light"))
     print(sMsg)
     bot.send_message(message.chat.id, sMsg)
+
+#@bot.message_handler(commands=['modeotomatis'])
 
 print ('I am listening ...')
 bot.add_custom_filter(custom_filters.ChatFilter())
