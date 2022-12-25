@@ -5,12 +5,29 @@ import RPi.GPIO as GPIO
 import json
 import serial
 import schedule
+import mysql.connector
 from datetime import datetime
 from telebot import custom_filters
 from telebot import TeleBot
 
-TOKEN = '5725314127:AAHxruba6S34B0He6rQ8vVRlJ6IZ_0ucgQ4'
-GROUP_ID = -675364128
+
+
+#Initialze database connection
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="rpi4db",
+    password="sqlrpi4",
+    database="rpi4watering"
+)
+
+#Fetch token telegram & group ID
+mycursor = mydb.cursor()
+telsql = "SELECT token_telegram FROM Telegram"
+mycursor.execute(telsql)
+restl = mycursor.fetchall()
+
+TOKEN = restl[0][0]
+GROUP_ID = restl[1][0]
 
 #Initial setup for pin for relay control
 GPIO.setwarnings(False)
@@ -53,15 +70,18 @@ def dataFetch():
             ("JSON:", e)
         #i += 1
 
+#Function for scheduling sensor data fetch
+def scheduleData():
+    x = 0
+
 #Initialize Telebot API
 bot = telebot.TeleBot(TOKEN)
 
-bot.send_message(GROUP_ID, "Bot aktif, silahkan masukkan command: \
-    (/pompa, /sensor, /modeotomatis)")
+bot.send_message(GROUP_ID, "Bot aktif, silahkan masukkan command: (/pompa <menit>, /sensor)")
 
-@bot.message_handler(commands=['help', 'start', 'modeotomatis'])
+@bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
-    bot.send_message(message.chat.id, "Bot aktif, silahkan masukkan command (/pompa, /sensor)")
+    bot.send_message(message.chat.id, "List Command:\n- /pompa <menit>\n- /sensor")
     #print(message)
 
 
@@ -86,11 +106,13 @@ def pumpHandle(message):
 @bot.message_handler(commands=['sensor'])
 def sensorHandle(message):
     sData = dataFetch()
-    sMsg = "Sensor Tanah 1: " + str(sData.get("soil1")) + \
-            "\nSensor Tanah 2: " + str(sData.get("soil2")) + \
+    sMsg = "Kelembaban Tanah (Pot 1): " + (("%.2f") % sData.get("soilc1")) + ("% (") + \
+            str(sData.get("soil1")) + (")") + \
+            "\nKelembaban Tanah (Pot 2): " + (("%.2f") % sData.get("soilc2")) + ("% (") + \
+            str(sData.get("soil2")) + (")") + \
             "\nSuhu: " + (("%.2f") % sData.get("temp")) + \
             "C\nKelembaban: " + (("%.2f") % sData.get("humidity")) + \
-            "RH\nSensor Cahaya: " + str(sData.get("light"))
+            "RH\nIntensitas Cahaya: " + str(sData.get("light"))
     print(sMsg)
     bot.send_message(message.chat.id, sMsg)
 
