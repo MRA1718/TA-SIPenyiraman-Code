@@ -68,7 +68,7 @@ void loop() {
   if(Serial.available() > 0) {
     data = Serial.readStringUntil('\n');
     
-    if(data == "collectData") {
+    if(data == "collectdata") {
     digitalWrite(power, HIGH);
     delay(500);
     
