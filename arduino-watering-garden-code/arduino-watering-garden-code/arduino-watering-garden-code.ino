@@ -9,11 +9,10 @@ const int power = 13;
 const int senSoilPin1 = A0;
 const int senSoilPin2 = A1;
 const int senLightPin = A2;
-const int waterMoistVal = 55;
+const int waterMoistVal = 0;
 const int airMoistVal = 650;
 StaticJsonDocument<64> doc;
-int s1, s2, l;
-float t, h, sc1, sc2;
+int s1, s2, l, t, h, sc1, sc2;
 
 //Sensor Tanah
 int senSoil(int dSoil) {
@@ -48,14 +47,14 @@ float senTempt(int dTempt) {
     return rTempt;
   }
 }
-
+/*
 float mapf(float x, float in_min, float in_max, float out_min, float out_max)
 {
   float mRes;
   mRes = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   return mRes;
 }
-
+*/
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -74,13 +73,13 @@ void loop() {
     
     //fetch data Soil Sensor
     s1 = senSoil(1);
-    sc1 = mapf(s1, airMoistVal, waterMoistVal, 0.0, 100.0);
+    sc1 = map(s1, airMoistVal, waterMoistVal, 0, 100);
     s2 = senSoil(2);
-    sc2 = mapf(s2, airMoistVal, waterMoistVal, 0.0, 100.0);   
+    sc2 = map(s2, airMoistVal, waterMoistVal, 0, 100);   
     //fetch data Temperature Sensor
     if(!dht20.begin()){
-      t = senTempt(1);
-      h = senTempt(2);
+      t = int(senTempt(1));
+      h = int(senTempt(2));
     }
     //fetch data Light Sensor
     l = senLight();
