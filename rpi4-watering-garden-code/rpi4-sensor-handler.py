@@ -10,7 +10,7 @@ ser.reset_input_buffer()
 #i=1
 while dict_json == "":
 #while i <= 5:
-    ser.write("collectData\n".encode('utf-8'))
+    ser.write("collectdata\n".encode('utf-8'))
     data = ser.readline().decode("utf-8")
     dtime = datetime.now()
     try:
@@ -24,6 +24,6 @@ while dict_json == "":
 
 print(dict_json.get("soil1"))
 print(dict_json.get("soil2"))
-print(round(dict_json.get("temp"), 2))
-print(round(dict_json.get("humidity"), 2))
+print(dict_json.get("temp"))
+print(isinstance(dict_json.get("humidity"), int))
 print(dict_json.get("light"))

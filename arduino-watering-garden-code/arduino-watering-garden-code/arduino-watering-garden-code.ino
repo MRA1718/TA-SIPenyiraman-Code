@@ -35,8 +35,8 @@ int senLight() {
   return rLight;
 }
 //Sensor Suhu & Kelembaban
-float senTempt(int dTempt) {
-  float rTempt;
+int senTempt(int dTempt) {
+  int rTempt;
   
   if(dTempt == 1) {
     rTempt = (dht20.getTemperature());
