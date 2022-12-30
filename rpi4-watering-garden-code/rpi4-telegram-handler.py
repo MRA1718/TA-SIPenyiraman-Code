@@ -365,17 +365,23 @@ def split_and_build_literals(line):
 #Function for automatic watering using fuzzy logic
 def autoWatering():
     bot.send_message(GROUP_ID, 'Sistem penyiraman otomatis aktif.')
-    sTime = datetime.now().strftime("%H:%M:%S")
+    sTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bot.send_message(GROUP_ID, 'Mengambil data sensor (' + str(sTime) + ')')
     snData = dataFetch() #Fetch data from sensor
-    fTime = datetime.now().strftime("%H:%M:%S")
+    fTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bot.send_message(GROUP_ID, 'Menghitung durasi penyiraman... (' + str(fTime) + ')')
     
-    soil1 = soilFuzzy(snData.get("soilc1"))
-    soil2 = soilFuzzy(snData.get("soilc2"))
-    temp = tempFuzzy(snData.get("temp"))
-    humid = humidFuzzy(snData.get("humidity"))
-    #light = lightFuzzy(snData.get("light"))
+    s1 = snData.get("soilc1")
+    s2 = snData.get("soilc2")
+    tmp = snData.get("temp")
+    hmd = snData.get("humidity")
+    lght = snData.get("light")
+
+    soil1 = soilFuzzy(s1)
+    soil2 = soilFuzzy(s2)
+    temp = tempFuzzy(tmp)
+    humid = humidFuzzy(hmd)
+    #light = lightFuzzy(lght)
     rules = parse_kb_file('/home/pi4/Github_Repo/TA-SIPenyiraman-Code/rpi4-watering-garden-code/rules.kb')
 
     print("Output of Fuzzyfication:")
@@ -416,15 +422,24 @@ def autoWatering():
     print("Output Inference: ", outputInference)
     print("\n")
 
-    duration = defuzzyfication(outputInference)
+    duration = int(defuzzyfication(outputInference))
 
-    eTime = datetime.now().strftime("%H:%M:%S")
+    eTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("Watering duration: ", duration)
 
     bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(duration) + ' detik. (' + str(eTime) + ')'  )
     relayOn()
     relayTimer = threading.Timer(duration, relayOff, args=[GROUP_ID])
     relayTimer.start()
+
+    #Insert log data to database
+    mycursor = mydb.cursor()
+
+    sql = "INSERT INTO log_penyiraman_otomatis(ot_soil1, ot_soil2, ot_temp, ot_humid, ot_light, ot_time_start_op, ot_time_fi_fetch, ot_time_start_rly, ot_relay_duration)\
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = (s1, s2, tmp, hmd, lght, sTime, fTime, eTime, duration)
+    mycursor.execute(sql, val)
+    mydb.commit()
 
 #Function for scheduling sensor data fetch
 def autoSchedWatering():
