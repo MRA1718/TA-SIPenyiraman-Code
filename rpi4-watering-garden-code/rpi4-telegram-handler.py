@@ -365,10 +365,24 @@ def split_and_build_literals(line):
 #Function for automatic watering using fuzzy logic
 def autoWatering():
     bot.send_message(GROUP_ID, 'Sistem penyiraman otomatis aktif.')
+    time.sleep(0.5) #Short delay after message
+    
     sTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bot.send_message(GROUP_ID, 'Mengambil data sensor (' + str(sTime) + ')')
+    
     snData = dataFetch() #Fetch data from sensor
     fTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
+    sMsg = "Kelembaban Tanah (Pot 1): " + str(sData.get("soilc1")) + ("% (") + \
+            str(sData.get("soil1")) + (")") + \
+            "\nKelembaban Tanah (Pot 2): " + str(sData.get("soilc2")) + ("% (") + \
+            str(sData.get("soil2")) + (")") + \
+            "\nSuhu: " + str(sData.get("temp")) + \
+            "C\nKelembaban: " + str(sData.get("humidity")) + \
+            "RH\nIntensitas Cahaya: " + str(sData.get("light"))
+    print(sMsg)
+    bot.send_message(GROUP_ID, sMsg + "\n(" + str(fTime) + ")")
+    time.sleep(0.5) #Short Delay after message
     bot.send_message(GROUP_ID, 'Menghitung durasi penyiraman... (' + str(fTime) + ')')
     
     s1 = snData.get("soilc1")
@@ -427,10 +441,12 @@ def autoWatering():
     eTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("Watering duration: ", duration)
 
-    bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(duration) + ' detik. (' + str(eTime) + ')'  )
-    relayOn()
-    relayTimer = threading.Timer(duration, relayOff, args=[GROUP_ID])
-    relayTimer.start()
+    if duration > 0:    
+        bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(duration) + ' detik. (' + str(eTime) + ')'  )
+    
+        relayOn()
+        relayTimer = threading.Timer(duration, relayOff, args=[GROUP_ID])
+        relayTimer.start()
 
     #Insert log data to database
     mycursor = mydb.cursor()
@@ -444,7 +460,7 @@ def autoWatering():
 #Function for scheduling sensor data fetch
 def autoSchedWatering():
     global wtrMode
-    schedule.every().day.at("09:30").do(autoWatering).tag('otomatis')
+    schedule.every().day.at("09:00").do(autoWatering).tag('otomatis')
     
     while wtrMode == 1:
         schedule.run_pending()
@@ -520,7 +536,6 @@ def pumpHandle(message):
             bot.send_message(message.chat.id, 'Penggunaan: /pompa <menit>')
     elif wtrMode == 1:
         bot.send_message(message.chat.id, 'Dalam mode otomatis, silahkan ganti /mode untuk menggunakan command pompa')
-
 
 #Command /sensor for collecting data sensor
 @bot.message_handler(commands=['sensor'])
