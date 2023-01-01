@@ -372,26 +372,28 @@ def autoWatering():
     
     snData = dataFetch() #Fetch data from sensor
     fTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    s1 = snData.get("soilc1")
+    sn1 = snData.get("soil1")
+    s2 = snData.get("soilc2")
+    sn2 = snData.get("soil2")
+    tmp = snData.get("temp")
+    hmd = snData.get("humidity")
+    lght = snData.get("light")
     
-    sMsg = "Kelembaban Tanah (Pot 1): " + str(sData.get("soilc1")) + ("% (") + \
-            str(sData.get("soil1")) + (")") + \
-            "\nKelembaban Tanah (Pot 2): " + str(sData.get("soilc2")) + ("% (") + \
-            str(sData.get("soil2")) + (")") + \
-            "\nSuhu: " + str(sData.get("temp")) + \
-            "C\nKelembaban: " + str(sData.get("humidity")) + \
-            "RH\nIntensitas Cahaya: " + str(sData.get("light"))
+    sMsg = "Kelembaban Tanah (Pot 1): " + str(s1) + ("% (") + \
+            str(sn1) + (")") + \
+            "\nKelembaban Tanah (Pot 2): " + str(s2) + ("% (") + \
+            str(sn2) + (")") + \
+            "\nSuhu: " + str(tmp) + \
+            "C\nKelembaban: " + str(hmd) + \
+            "RH\nIntensitas Cahaya: " + str(lght)
     print(sMsg)
     bot.send_message(GROUP_ID, sMsg + "\n(" + str(fTime) + ")")
     time.sleep(0.5) #Short Delay after message
     bot.send_message(GROUP_ID, 'Menghitung durasi penyiraman... (' + str(fTime) + ')')
     
-    s1 = snData.get("soilc1")
-    s2 = snData.get("soilc2")
-    tmp = snData.get("temp")
-    hmd = snData.get("humidity")
-    lght = snData.get("light")
-
-    soil1 = soilFuzzy(s1)
+        soil1 = soilFuzzy(s1)
     soil2 = soilFuzzy(s2)
     temp = tempFuzzy(tmp)
     humid = humidFuzzy(hmd)
