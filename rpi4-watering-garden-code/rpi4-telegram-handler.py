@@ -15,18 +15,19 @@ from telebot import TeleBot
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 #Initialze database connection
-mydb = mysql.connector.connect(
-    host="localhost",
-    user="rpi4db",
-    password="sqlrpi4",
-    database="rpi4watering"
-)
+config = {'host': 'localhost',
+    'user': 'rpi4db',
+    'password': 'sqlrpi4',
+    'database': 'rpi4watering'}
+mydb = mysql.connector.connect(**config)
 
 #Fetch token telegram & group ID
 mycursor = mydb.cursor()
 telsql = "SELECT token_telegram FROM Telegram"
 mycursor.execute(telsql)
 restl = mycursor.fetchall()
+mycursor.close()
+mydb.close()
 
 TOKEN = restl[0][0]
 GROUP_ID = restl[1][0]
@@ -95,17 +96,17 @@ def tempFuzzy(temp):
     if len(lngTemp) > 1:
         if lngTemp[0] == tempFuzzySet[0] and lngTemp[1] == tempFuzzySet[1]:
             #Dingin
-            cold = -(temp - 28) / (28 - 26)
+            cold = -(temp - 29) / (29 - 26)
             valTemp.append([lngTemp[0], cold])
             #Hangat
-            warm = (temp - 26) / (28 - 26)
+            warm = (temp - 26) / (29 - 26)
             valTemp.append([lngTemp[1], warm])
         if lngTemp[0] == tempFuzzySet[1] and lngTemp[1] == tempFuzzySet[2]:
             #Hangat
-            warm = -(temp - 35) / (35 - 32)
+            warm = -(temp - 36) / (36 - 30)
             valTemp.append([lngTemp[0], warm])
             #Panas
-            hot = (temp - 32) / (35 - 32)
+            hot = (temp - 30) / (36 - 30)
             valTemp.append([lngTemp[1], hot])
     else:
         valTemp.append([lngTemp[0], 1])
@@ -185,12 +186,18 @@ def inference(s1, s2, tmp, hmd, fuzzyRules):
     for data in hmd:
         agenda.append(data)
 
+    print("agenda: ", agenda)
+    print("\n")
+
     while agenda:
         item = agenda.pop(0)
+        # print("item: ", item)
+        # print("\n")
         for rule in fuzzyRules:
             for j, premise in enumerate(rule[0]):
                 if premise == item[0]:
                     rule[0][j] = [True, rule[0][j], item[1]]
+            print()
             if check_hypothesis(rule[0]):
                 conclusion = rule[1]
                 possibility.append(rule)
@@ -364,8 +371,11 @@ def split_and_build_literals(line):
 
 #Function for automatic watering using fuzzy logic
 def autoWatering():
+    global mydb
+    global config
+
     bot.send_message(GROUP_ID, 'Sistem penyiraman otomatis aktif.')
-    time.sleep(0.5) #Short delay after message
+    #time.sleep(0.5) #Short delay after message
     
     sTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bot.send_message(GROUP_ID, 'Mengambil data sensor (' + str(sTime) + ')')
@@ -390,10 +400,10 @@ def autoWatering():
             "RH\nIntensitas Cahaya: " + str(lght)
     print(sMsg)
     bot.send_message(GROUP_ID, sMsg + "\n(" + str(fTime) + ")")
-    time.sleep(0.5) #Short Delay after message
-    bot.send_message(GROUP_ID, 'Menghitung durasi penyiraman... (' + str(fTime) + ')')
+    #time.sleep(0.5) #Short Delay after message
+    bot.send_message(GROUP_ID, 'Menghitung durasi penyiraman...')
     
-        soil1 = soilFuzzy(s1)
+    soil1 = soilFuzzy(s1)
     soil2 = soilFuzzy(s2)
     temp = tempFuzzy(tmp)
     humid = humidFuzzy(hmd)
@@ -410,18 +420,17 @@ def autoWatering():
 
     inf = inference(soil1, soil2, temp, humid, rules)
 
-    print(inf)
-    print("\n")
+    print("Inference:", inf)
 
     resRuleMin = []
 
     for data in inf:
-        print(data[0][0][0][1], data[0][0][0][2], data[0][0][1][1], data[0][0][1][2], data[1])
-        minimum = min(data[0][0][0][2], data[0][0][1][2])
+        print(data[0][0][0][1], data[0][0][0][2], data[0][0][1][1], data[0][0][1][2], data[0][0][2][1], data[0][0][2][2], data[0][0][3][1], data[0][0][3][2], data[1])
+        minimum = min(data[0][0][0][2], data[0][0][1][2], data[0][0][2][2], data[0][0][3][2])
         resRuleMin.append([data[1],minimum])
     print("\n")
 
-    print(resRuleMin)
+    print("Result minimum: ", resRuleMin)
 
     resRuleMax = {}
     for data in resRuleMin:
@@ -443,21 +452,24 @@ def autoWatering():
     eTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("Watering duration: ", duration)
 
-    if duration > 0:    
-        bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(duration) + ' detik. (' + str(eTime) + ')'  )
+    # if duration > 0:    
+    #     bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(duration) + ' detik. (' + str(eTime) + ')'  )
     
-        relayOn()
-        relayTimer = threading.Timer(duration, relayOff, args=[GROUP_ID])
-        relayTimer.start()
+    #     relayOn()
+    #     relayTimer = threading.Timer(duration, relayOff, args=[GROUP_ID])
+    #     relayTimer.start()
 
-    #Insert log data to database
-    mycursor = mydb.cursor()
+    # #Insert log data to database
+    # mydb = mysql.connector.connect(**config)
+    # mycursor = mydb.cursor()
 
-    sql = "INSERT INTO log_penyiraman_otomatis(ot_soil1, ot_soil2, ot_temp, ot_humid, ot_light, ot_time_start_op, ot_time_fi_fetch, ot_time_start_rly, ot_relay_duration)\
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    val = (s1, s2, tmp, hmd, lght, sTime, fTime, eTime, duration)
-    mycursor.execute(sql, val)
-    mydb.commit()
+    # sql = "INSERT INTO log_penyiraman_otomatis(ot_soil1, ot_soil2, ot_temp, ot_humid, ot_light, ot_time_start_op, ot_time_fi_fetch, ot_time_start_rly, ot_relay_duration)\
+    #     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    # val = (s1, s2, tmp, hmd, lght, sTime, fTime, eTime, duration)
+    # mycursor.execute(sql, val)
+    # mydb.commit()
+    # mycursor.close()
+    # mydb.close()
 
 #Function for scheduling sensor data fetch
 def autoSchedWatering():
@@ -584,6 +596,13 @@ def modeHandle(message):
 @bot.message_handler(commands=['test'])
 def testHandle(message):
     autoWatering()
+
+@bot.message_handler(commands=['rule'])
+def ruleHandle(message):
+    rules = parse_kb_file('/home/pi4/Github_Repo/TA-SIPenyiraman-Code/rpi4-watering-garden-code/rules.kb')
+
+    for data in rules:
+        print(data)
 
 def main():
     print('I am listening ...')
