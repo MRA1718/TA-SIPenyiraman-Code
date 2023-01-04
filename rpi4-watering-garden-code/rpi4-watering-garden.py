@@ -80,8 +80,12 @@ humidity['basah'] = fuzz.trapmf(humidity.universe, [60, 80, 100, 100])
 # light['terang'] = fuzz.trapmf(light.universe, [600, 850, 1000, 1000])
 
 #duration
-drtn = ['pendek', 'sedang', 'lama']
-duration.automf(names=drtn)
+duration['pendek'] = fuzz.trapmf(duration.universe, [0, 0, 45, 75])
+duration['sedang'] = fuzz.trapmf(duration.universe, [40, 75, 105, 135])
+duration['lama'] = fuzz.trapmf(duration.universe, [105, 135, 180, 180])
+
+# drtn = ['pendek', 'sedang', 'lama']
+# duration.automf(names=drtn)
 
 #Fuzzy rule
 rule1 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['dingin'] & humidity['basah'], duration['pendek'])
@@ -165,7 +169,6 @@ def autoWatering():
             rule25, rule26, rule27, rule28, rule29, rule30,
             rule31, rule32, rule33, rule34, rule35, rule36]
     
-    # drtn_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, rule11, rule12, rule13])
     drtn_ctrl = ctrl.ControlSystem(rules)
 
     duratn = ctrl.ControlSystemSimulation(drtn_ctrl)
@@ -178,16 +181,16 @@ def autoWatering():
 
     duratn.compute()
 
-    duration = round(duratn.output['duration'])
+    rDuration = round(duratn.output['duration'])
 
     eTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("Watering duration: ", duration)
+    print("Watering duration: ", rDuration)
 
-    if duration > 0:    
-        bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(duration) + ' detik. (' + str(eTime) + ')'  )
-    
+    if rDuration > 0:    
+        bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(rDuration) + ' detik. (' + str(eTime) + ')'  )
+
         relayOn()
-        relayTimer = threading.Timer(duration, relayOff, args=[GROUP_ID])
+        relayTimer = threading.Timer(rDuration, relayOff, args=[GROUP_ID])
         relayTimer.start()
 
     #Insert log data to database
@@ -196,16 +199,20 @@ def autoWatering():
 
     sql = "INSERT INTO log_penyiraman_otomatis(ot_soil1, ot_soil2, ot_temp, ot_humid, ot_light, ot_time_start_op, ot_time_fi_fetch, ot_time_start_rly, ot_relay_duration)\
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    val = (s1, s2, tmp, hmd, lght, sTime, fTime, eTime, duration)
+    val = (s1, s2, tmp, hmd, lght, sTime, fTime, eTime, rDuration)
     mycursor.execute(sql, val)
     mydb.commit()
     mycursor.close()
     mydb.close()
 
+def autoReminder():
+    bot.send_message(GROUP_ID, 'Penyiraman otomatis akan dilakukan dalam 1 jam')
+
 #Function for scheduling sensor data fetch
 def autoSchedWatering():
     global wtrMode
     schedule.every().day.at("09:00").do(autoWatering).tag('otomatis')
+    schedule.every().day.at("08:00").do(autoReminder).tag('otomatis')
     
     while wtrMode == 1:
         schedule.run_pending()
@@ -263,16 +270,29 @@ def pumpHandle(message):
     global relayTimer
     global wtrMode
     args = message.text.split()
+    name = message.chat.first_name
 
     if wtrMode == 0:
         if len(args) > 1 and args[1].isdigit():
-            minutes = (args[1])
-            sec = int(minutes)*60
+            seconds = int(args[1])
             if relayStatus == 0:
-                bot.send_message(message.chat.id, 'Menyalakan pompa selama ' + minutes + ' menit.' )
+                bot.send_message(message.chat.id, 'Menyalakan pompa selama ' + args[1] + ' detik' )
+                sTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 relayOn()
-                relayTimer = threading.Timer(sec, relayOff, args=[message.chat.id])
+                relayTimer = threading.Timer(seconds, relayOff, args=[message.chat.id])
                 relayTimer.start()
+                
+                #Insert log to database
+                mydb = mysql.connector.connect(**config)
+                mycursor = mydb.cursor()
+
+                sql = "INSERT INTO log_penyiraman_otomatis(m_name, m_time_start, m_relay_duration)\
+                    VALUES (%s, %s, %s)"
+                val = (name, sTime, seconds)
+                mycursor.execute(sql, val)
+                mydb.commit()
+                mycursor.close()
+                mydb.close()
             elif relayStatus == 1:
                 bot.send_message(message.chat.id, 'Pompa sedang menyala, gunakan /pompa STOP untuk menghentikan')
         elif len(args) > 1 and args[1] == 'stop' and relayStatus == 1:
@@ -281,7 +301,7 @@ def pumpHandle(message):
             relayStatus = 0
             bot.send_message(message.chat.id, 'Menghentikan pompa')
         else:
-            bot.send_message(message.chat.id, 'Penggunaan:\n- /pompa <menit> (Menyalakan pompa selama durasi tertentu\n- /pompa stop (Menghentikan pompa jika menyala)')
+            bot.send_message(message.chat.id, 'Penggunaan:\n- /pompa <detik> (Menyalakan pompa selama durasi tertentu)\n- /pompa stop (Menghentikan pompa jika menyala)')
     elif wtrMode == 1:
         bot.send_message(message.chat.id, 'Dalam mode otomatis, silahkan ganti /mode untuk menggunakan command pompa')
 
@@ -325,15 +345,17 @@ def modeHandle(message):
             bot.send_message(message.chat.id, 'Mode penyiraman: otomatis')
         elif wtrMode == 0:
             bot.send_message(message.chat.id, 'Mode penyiraman: manual')
-    else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis)')
+    else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 09:00)')
 
-@bot.message_handler(commands=['test'])
-def testHandle(message):
-    autoWatering()
+@bot.message_handler(commands=['sender'])
+def modeHandle(message):
+    name = message.chat.first_name
+
+    print(name)
 
 def main():
     atexit.register(exit_handler)
-    print('I am listening ...')
+    print('Bot listening ...')
     bot.add_custom_filter(custom_filters.ChatFilter())
     threading.Thread(bot.infinity_polling(timeout=20)).start()
 
