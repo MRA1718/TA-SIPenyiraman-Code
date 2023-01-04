@@ -1,6 +1,11 @@
-class MyClass(object): pass
-    object.append("rule" + str(x+1))
+import numpy as np
+import skfuzzy as fuzz
+from skfuzzy import control as ctrl
+import matplotlib.pyplot as plt
 
-objs = [MyClass() for x in range(10)]
+duration = ctrl.Consequent(np.arange(0, 180, 1), 'duration')
 
-print(objs)
+drtn = ['pendek', 'sedang', 'lama']
+duration.automf(names=drtn)
+
+duration['sedang'].view()

@@ -7,6 +7,7 @@ import serial
 import schedule
 import mysql.connector
 import warnings
+import atexit
 import numpy as np
 import skfuzzy as fuzz
 import matplotlib.pyplot as plt
@@ -242,6 +243,9 @@ def dataFetch():
             ("JSON:", e)
         #i += 1
 
+def exit_handler():
+    bot.send_message(GROUP_ID, 'Bot dinonaktifkan')
+
 #Initialize Telebot API
 bot = telebot.TeleBot(TOKEN)
 
@@ -327,14 +331,8 @@ def modeHandle(message):
 def testHandle(message):
     autoWatering()
 
-@bot.message_handler(commands=['rule'])
-def ruleHandle(message):
-    rules = parse_kb_file('/home/pi4/Github_Repo/TA-SIPenyiraman-Code/rpi4-watering-garden-code/rules.kb')
-
-    for data in rules:
-        print(data)
-
 def main():
+    atexit.register(exit_handler)
     print('I am listening ...')
     bot.add_custom_filter(custom_filters.ChatFilter())
     threading.Thread(bot.infinity_polling(timeout=20)).start()
