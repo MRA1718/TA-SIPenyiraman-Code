@@ -28,7 +28,7 @@ mydb = mysql.connector.connect(**config)
 
 #Fetch token telegram & group ID
 mycursor = mydb.cursor()
-telsql = "SELECT token_telegram FROM Telegram"
+telsql = "SELECT token_telegram FROM telegram"
 mycursor.execute(telsql)
 restl = mycursor.fetchall()
 mycursor.close()
@@ -270,7 +270,9 @@ def pumpHandle(message):
     global relayTimer
     global wtrMode
     args = message.text.split()
-    name = message.chat.first_name
+    fname = message.from_user.first_name
+    lname = message.from_user.last_name
+    name = str(fname) + ' ' + str(lname)
 
     if wtrMode == 0:
         if len(args) > 1 and args[1].isdigit():
@@ -286,7 +288,7 @@ def pumpHandle(message):
                 mydb = mysql.connector.connect(**config)
                 mycursor = mydb.cursor()
 
-                sql = "INSERT INTO log_penyiraman_otomatis(m_name, m_time_start, m_relay_duration)\
+                sql = "INSERT INTO log_penyiraman_manual(m_name, m_time_start, m_relay_duration)\
                     VALUES (%s, %s, %s)"
                 val = (name, sTime, seconds)
                 mycursor.execute(sql, val)
@@ -346,12 +348,6 @@ def modeHandle(message):
         elif wtrMode == 0:
             bot.send_message(message.chat.id, 'Mode penyiraman: manual')
     else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 09:00)')
-
-@bot.message_handler(commands=['sender'])
-def modeHandle(message):
-    name = message.chat.first_name
-
-    print(name)
 
 def main():
     atexit.register(exit_handler)
