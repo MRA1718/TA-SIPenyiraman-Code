@@ -47,11 +47,13 @@ relayStatus = 0
 wtrMode = 0 #Status for used mode, 0 as manual mode
 
 #Fuzzy set declaration
+#Fuzzy input
 soil1 = ctrl.Antecedent(np.arange(0, 100, 1), 'soil1')
 soil2 = ctrl.Antecedent(np.arange(0, 100, 1), 'soil2')
 temperature = ctrl.Antecedent(np.arange(20, 45, 1), 'temperature')
 humidity = ctrl.Antecedent(np.arange(0, 100, 1), 'humidity')
-#light = ctrl.Antecedent(np.arange(0, 1000, 1), 'light')
+light = ctrl.Antecedent(np.arange(0, 1000, 1), 'light')
+#Fuzzy output
 duration = ctrl.Consequent(np.arange(0, 180, 1), 'duration')
 
 #soil1
@@ -75,17 +77,14 @@ humidity['lembab'] = fuzz.trapmf(humidity.universe, [20, 40, 60, 80])
 humidity['basah'] = fuzz.trapmf(humidity.universe, [60, 80, 100, 100])
 
 #light
-# light['gelap'] = fuzz.trapmf(light.universe, [0, 0, 200, 400])
-# light['redup'] = fuzz.trapmf(light.universe, [250, 350, 550, 750])
-# light['terang'] = fuzz.trapmf(light.universe, [600, 850, 1000, 1000])
+light['gelap'] = fuzz.trapmf(light.universe, [0, 0, 200, 400])
+light['redup'] = fuzz.trapmf(light.universe, [200, 400, 600, 800])
+light['terang'] = fuzz.trapmf(light.universe, [600, 800, 1000, 1000])
 
 #duration
 duration['pendek'] = fuzz.trapmf(duration.universe, [0, 0, 45, 75])
 duration['sedang'] = fuzz.trapmf(duration.universe, [40, 75, 105, 135])
 duration['lama'] = fuzz.trapmf(duration.universe, [105, 135, 180, 180])
-
-# drtn = ['pendek', 'sedang', 'lama']
-# duration.automf(names=drtn)
 
 #Fuzzy rule
 rule1 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['dingin'] & humidity['basah'], duration['pendek'])
@@ -128,14 +127,19 @@ rule34 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['panas'] & hu
 rule35 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['panas'] & humidity['lembab'], duration['lama'])
 rule36 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['panas'] & humidity['kering'], duration['lama'])
 
+rule37 = ctrl.Rule(light['terang'], duration['lama'])
+rule38 = ctrl.Rule(light['redup'], duration['sedang'])
+rule39 = ctrl.Rule(light['gelap'], duration['pendek'])
+rule40 = ctrl.Rule(light['terang'] | light['redup'], duration['sedang'])
+rule41 = ctrl.Rule(light['redup'] | light['gelap'], duration['pendek'] )
+
 #Function for automatic watering using fuzzy logic
 def autoWatering():
     global mydb
     global config
 
     bot.send_message(GROUP_ID, 'Sistem penyiraman otomatis aktif.')
-    #time.sleep(0.5) #Short delay after message
-    
+   
     sTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bot.send_message(GROUP_ID, 'Mengambil data sensor (' + str(sTime) + ')')
     
@@ -159,15 +163,17 @@ def autoWatering():
             "RH\nIntensitas Cahaya: " + str(lght)
     print(sMsg)
     bot.send_message(GROUP_ID, sMsg + "\n(" + str(fTime) + ")")
-    #time.sleep(0.5) #Short Delay after message
+    
     bot.send_message(GROUP_ID, 'Menghitung durasi penyiraman...')
     
+    #Fuzzy process
     rules = [rule1, rule2, rule3, rule4, rule5, rule6, 
             rule7, rule8, rule9, rule10, rule11, rule12, 
             rule13, rule14, rule15, rule16, rule17, rule18,
             rule19, rule20, rule21, rule22, rule23, rule24,
             rule25, rule26, rule27, rule28, rule29, rule30,
-            rule31, rule32, rule33, rule34, rule35, rule36]
+            rule31, rule32, rule33, rule34, rule35, rule36,
+            rule37, rule38, rule39, rule40, rule41]
     
     drtn_ctrl = ctrl.ControlSystem(rules)
 
@@ -177,7 +183,7 @@ def autoWatering():
     duratn.input['soil2'] = s2
     duratn.input['temperature'] = tmp
     duratn.input['humidity'] = hmd
-    #duratn.input['light'] = lght
+    duratn.input['light'] = lght
 
     duratn.compute()
 
@@ -185,7 +191,7 @@ def autoWatering():
 
     eTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("Watering duration: ", rDuration)
-
+    
     if rDuration > 0:    
         bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(rDuration) + ' detik. (' + str(eTime) + ')'  )
 
