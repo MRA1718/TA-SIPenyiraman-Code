@@ -94,36 +94,36 @@ rule4 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['hangat'] & humi
 rule5 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['hangat'] & humidity['lembab'], duration['pendek'])
 rule6 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['hangat'] & humidity['kering'], duration['pendek'])
 rule7 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['panas'] & humidity['basah'], duration['pendek'])
-rule8 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['panas'] & humidity['lembab'], duration['pendek'])
+rule8 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['panas'] & humidity['lembab'], duration['sedang'])
 rule9 = ctrl.Rule(soil1['basah'] & soil2['basah'] & temperature['panas'] & humidity['kering'], duration['sedang'])
 
 rule10 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['dingin'] & humidity['basah'], duration['pendek'])
 rule11 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['dingin'] & humidity['lembab'], duration['pendek'])
 rule12 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['dingin'] & humidity['kering'], duration['pendek'])
-rule13 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['hangat'] & humidity['basah'], duration['sedang'])
+rule13 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['hangat'] & humidity['basah'], duration['pendek'])
 rule14 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['hangat'] & humidity['lembab'], duration['sedang'])
 rule15 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['hangat'] & humidity['kering'], duration['sedang'])
-rule16 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['basah'], duration['sedang'])
+rule16 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['basah'], duration['lama'])
 rule17 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['lembab'], duration['lama'])
 rule18 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['kering'], duration['lama'])
 
 rule19 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['dingin'] & humidity['basah'], duration['pendek'])
 rule20 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['dingin'] & humidity['lembab'], duration['pendek'])
 rule21 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['dingin'] & humidity['kering'], duration['pendek'])
-rule22 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['hangat'] & humidity['basah'], duration['sedang'])
+rule22 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['hangat'] & humidity['basah'], duration['pendek'])
 rule23 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['hangat'] & humidity['lembab'], duration['sedang'])
 rule24 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['hangat'] & humidity['kering'], duration['sedang'])
-rule25 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['basah'], duration['sedang'])
+rule25 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['basah'], duration['lama'])
 rule26 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['lembab'], duration['lama'])
 rule27 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['kering'], duration['lama'])
 
-rule28 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['dingin'] & humidity['basah'], duration['pendek'])
-rule29 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['dingin'] & humidity['lembab'], duration['pendek'])
-rule30 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['dingin'] & humidity['kering'], duration['pendek'])
-rule31 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['hangat'] & humidity['basah'], duration['pendek'])
+rule28 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['dingin'] & humidity['basah'], duration['sedang'])
+rule29 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['dingin'] & humidity['lembab'], duration['sedang'])
+rule30 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['dingin'] & humidity['kering'], duration['sedang'])
+rule31 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['hangat'] & humidity['basah'], duration['sedang'])
 rule32 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['hangat'] & humidity['lembab'], duration['sedang'])
 rule33 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['hangat'] & humidity['kering'], duration['lama'])
-rule34 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['panas'] & humidity['basah'], duration['sedang'])
+rule34 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['panas'] & humidity['basah'], duration['lama'])
 rule35 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['panas'] & humidity['lembab'], duration['lama'])
 rule36 = ctrl.Rule(soil1['lembab'] & soil2['lembab'] & temperature['panas'] & humidity['kering'], duration['lama'])
 
@@ -138,10 +138,10 @@ def autoWatering():
     global mydb
     global config
 
-    bot.send_message(GROUP_ID, 'Sistem penyiraman otomatis aktif.')
+    bot.send_message(GROUP_ID, 'Sistem penyiraman otomatis aktif')
    
     sTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    bot.send_message(GROUP_ID, 'Mengambil data sensor (' + str(sTime) + ')')
+    bot.send_message(GROUP_ID, 'Mengambil data sensor... (' + str(sTime) + ')')
     
     snData = dataFetch() #Fetch data from sensor
     fTime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -154,9 +154,9 @@ def autoWatering():
     hmd = snData.get("humidity")
     lght = snData.get("light")
     
-    sMsg = "Kelembaban Tanah (Pot 1): " + str(s1) + ("% (") + \
+    sMsg = "Kelembaban Tanah (Sensor 1): " + str(s1) + ("% (") + \
             str(sn1) + (")") + \
-            "\nKelembaban Tanah (Pot 2): " + str(s2) + ("% (") + \
+            "\nKelembaban Tanah (Sensor 2): " + str(s2) + ("% (") + \
             str(sn2) + (")") + \
             "\nSuhu: " + str(tmp) + \
             "C\nKelembaban: " + str(hmd) + \
@@ -193,7 +193,7 @@ def autoWatering():
     print("Watering duration: ", rDuration)
     
     if rDuration > 0:    
-        bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(rDuration) + ' detik. (' + str(eTime) + ')'  )
+        bot.send_message(GROUP_ID, 'Menyalakan pompa selama ' + str(rDuration) + ' detik (' + str(eTime) + ')'  )
 
         relayOn()
         relayTimer = threading.Timer(rDuration, relayOff, args=[GROUP_ID])
@@ -318,9 +318,9 @@ def pumpHandle(message):
 def sensorHandle(message):
     bot.send_message(message.chat.id, "Membaca nilai sensor (" + str(datetime.now().strftime("%H:%M:%S")) + ")")
     sData = dataFetch()
-    sMsg = "Kelembaban Tanah (Pot 1): " + str(sData.get("soilc1")) + ("% (") + \
+    sMsg = "Kelembaban Tanah (Sensor 1): " + str(sData.get("soilc1")) + ("% (") + \
             str(sData.get("soil1")) + (")") + \
-            "\nKelembaban Tanah (Pot 2): " + str(sData.get("soilc2")) + ("% (") + \
+            "\nKelembaban Tanah (Sensor 2): " + str(sData.get("soilc2")) + ("% (") + \
             str(sData.get("soil2")) + (")") + \
             "\nSuhu: " + str(sData.get("temp")) + \
             "C\nKelembaban: " + str(sData.get("humidity")) + \
