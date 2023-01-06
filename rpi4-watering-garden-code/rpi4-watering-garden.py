@@ -217,8 +217,8 @@ def autoReminder():
 #Function for scheduling sensor data fetch
 def autoSchedWatering():
     global wtrMode
-    schedule.every().day.at("09:00").do(autoWatering).tag('otomatis')
-    schedule.every().day.at("08:00").do(autoReminder).tag('otomatis')
+    schedule.every().day.at("08:00").do(autoWatering).tag('otomatis')
+    schedule.every().day.at("07:00").do(autoReminder).tag('otomatis')
     
     while wtrMode == 1:
         schedule.run_pending()
