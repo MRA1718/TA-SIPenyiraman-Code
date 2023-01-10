@@ -57,24 +57,24 @@ light = ctrl.Antecedent(np.arange(0, 1000, 1), 'light')
 duration = ctrl.Consequent(np.arange(0, 180, 1), 'duration')
 
 #soil1
-soil1['kering'] = fuzz.trapmf(soil1.universe, [0, 0, 20, 40])
-soil1['lembab'] = fuzz.trapmf(soil1.universe, [20, 40, 60, 80])
-soil1['basah'] = fuzz.trapmf(soil1.universe, [60, 80, 100, 100])
+soil1['kering'] = fuzz.trapmf(soil1.universe, [0, 0, 30, 45])
+soil1['lembab'] = fuzz.trapmf(soil1.universe, [30, 50, 70, 85])
+soil1['basah'] = fuzz.trapmf(soil1.universe, [70, 80, 100, 100])
 
 #soil2
-soil2['kering'] = fuzz.trapmf(soil2.universe, [0, 0, 20, 40])
-soil2['lembab'] = fuzz.trapmf(soil2.universe, [20, 40, 60, 80])
-soil2['basah'] = fuzz.trapmf(soil2.universe, [60, 80, 100, 100])
+soil2['kering'] = fuzz.trapmf(soil2.universe, [0, 0, 30, 45])
+soil2['lembab'] = fuzz.trapmf(soil2.universe, [30, 50, 70, 85])
+soil2['basah'] = fuzz.trapmf(soil2.universe, [70, 80, 100, 100])
 
 #temperature
-temperature['dingin'] = fuzz.trapmf(temperature.universe, [20, 20, 25, 30])
-temperature['hangat'] = fuzz.trapmf(temperature.universe, [25, 30, 35, 40])
-temperature['panas'] = fuzz.trapmf(temperature.universe, [35, 40, 45, 45]) 
+temperature['dingin'] = fuzz.trapmf(temperature.universe, [20, 20, 22, 25])
+temperature['hangat'] = fuzz.trapmf(temperature.universe, [23, 25, 32, 36])
+temperature['panas'] = fuzz.trapmf(temperature.universe, [30, 35, 45, 45]) 
 
 #humidity
-humidity['kering'] = fuzz.trapmf(humidity.universe, [0, 0, 20, 40])
-humidity['lembab'] = fuzz.trapmf(humidity.universe, [20, 40, 60, 80])
-humidity['basah'] = fuzz.trapmf(humidity.universe, [60, 80, 100, 100])
+humidity['kering'] = fuzz.trapmf(humidity.universe, [0, 0, 30, 40])
+humidity['lembab'] = fuzz.trapmf(humidity.universe, [30, 40, 60, 80])
+humidity['basah'] = fuzz.trapmf(humidity.universe, [70, 80, 100, 100])
 
 #light
 light['gelap'] = fuzz.trapmf(light.universe, [0, 0, 200, 400])
@@ -217,8 +217,8 @@ def autoReminder():
 #Function for scheduling sensor data fetch
 def autoSchedWatering():
     global wtrMode
-    schedule.every().day.at("08:00").do(autoWatering).tag('otomatis')
-    schedule.every().day.at("07:00").do(autoReminder).tag('otomatis')
+    schedule.every().day.at("09:00").do(autoWatering).tag('otomatis')
+    schedule.every().day.at("08:00").do(autoReminder).tag('otomatis')
     
     while wtrMode == 1:
         schedule.run_pending()
@@ -353,7 +353,7 @@ def modeHandle(message):
             bot.send_message(message.chat.id, 'Mode penyiraman: otomatis')
         elif wtrMode == 0:
             bot.send_message(message.chat.id, 'Mode penyiraman: manual')
-    else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 08:00)')
+    else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 09:00)')
 
 def main():
     atexit.register(exit_handler)
