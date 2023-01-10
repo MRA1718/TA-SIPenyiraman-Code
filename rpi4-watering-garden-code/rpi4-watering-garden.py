@@ -353,7 +353,7 @@ def modeHandle(message):
             bot.send_message(message.chat.id, 'Mode penyiraman: otomatis')
         elif wtrMode == 0:
             bot.send_message(message.chat.id, 'Mode penyiraman: manual')
-    else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 09:00)')
+    else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 08:00)')
 
 def main():
     atexit.register(exit_handler)
