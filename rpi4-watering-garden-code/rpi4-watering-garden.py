@@ -335,7 +335,7 @@ def modeHandle(message):
         if wtrMode == 1:
             wtrMode = 0
             schedule.clear('otomatis')
-            bot.send_message(message.chat.id, 'mengganti mode penyiraman ke manual')
+            bot.send_message(message.chat.id, 'Mengganti mode penyiraman ke manual')
         elif wtrMode == 0:
             bot.send_message(message.chat.id, 'Mode penyiraman: manual. gunakan "/mode otomatis" untuk mengganti mode penyiraman')
     elif len(mdargs) > 1 and mdargs[1] == 'otomatis':
@@ -343,7 +343,7 @@ def modeHandle(message):
             bot.send_message(message.chat.id, 'Mode penyiraman: otomatis. gunakan "/mode manual" untuk mengganti mode penyiraman')
         elif wtrMode == 0:
             wtrMode = 1
-            bot.send_message(message.chat.id, 'mengganti mode penyiraman ke otomatis (Penyiraman setiap hari jam 08:00)')
+            bot.send_message(message.chat.id, 'Mengganti mode penyiraman ke otomatis (Penyiraman setiap hari jam 08:00)')
             autoSchedWatering()
     elif len(mdargs) > 1 and mdargs[1] == 'status':
         if wtrMode == 1:
