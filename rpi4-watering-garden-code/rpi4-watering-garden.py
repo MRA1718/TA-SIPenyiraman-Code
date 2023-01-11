@@ -6,7 +6,6 @@ import json
 import serial
 import schedule
 import mysql.connector
-import warnings
 import atexit
 import numpy as np
 import skfuzzy as fuzz
@@ -14,19 +13,16 @@ import matplotlib.pyplot as plt
 from skfuzzy import control as ctrl
 from datetime import datetime
 from telebot import custom_filters
-from telebot import TeleBot
-
-#Ignore warning when opening rules file
-warnings.filterwarnings("ignore", category=DeprecationWarning) 
+from telebot import TeleBot 
 
 #Initialze database connection
 config = {'host': 'localhost',
     'user': 'rpi4db',
     'password': 'sqlrpi4',
     'database': 'rpi4watering'}
-mydb = mysql.connector.connect(**config)
 
 #Fetch token telegram & group ID
+mydb = mysql.connector.connect(**config)
 mycursor = mydb.cursor()
 telsql = "SELECT token_telegram FROM telegram"
 mycursor.execute(telsql)
@@ -103,7 +99,7 @@ rule12 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['dingin'] & hu
 rule13 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['hangat'] & humidity['basah'], duration['pendek'])
 rule14 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['hangat'] & humidity['lembab'], duration['sedang'])
 rule15 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['hangat'] & humidity['kering'], duration['sedang'])
-rule16 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['basah'], duration['lama'])
+rule16 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['basah'], duration['sedang'])
 rule17 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['lembab'], duration['lama'])
 rule18 = ctrl.Rule(soil1['basah'] & soil2['lembab'] & temperature['panas'] & humidity['kering'], duration['lama'])
 
@@ -113,7 +109,7 @@ rule21 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['dingin'] & hu
 rule22 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['hangat'] & humidity['basah'], duration['pendek'])
 rule23 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['hangat'] & humidity['lembab'], duration['sedang'])
 rule24 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['hangat'] & humidity['kering'], duration['sedang'])
-rule25 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['basah'], duration['lama'])
+rule25 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['basah'], duration['sedang'])
 rule26 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['lembab'], duration['lama'])
 rule27 = ctrl.Rule(soil1['lembab'] & soil2['basah'] & temperature['panas'] & humidity['kering'], duration['lama'])
 
@@ -259,11 +255,6 @@ def dataFetch():
 def exit_handler():
     bot.send_message(GROUP_ID, 'Bot dinonaktifkan')
 
-#Initialize Telebot API
-bot = telebot.TeleBot(TOKEN)
-
-bot.send_message(GROUP_ID, 'Bot aktif, silahkan masukkan command: (/pompa, /sensor, /mode)')
-
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, 'List Command:\n- /pompa\n- /sensor\n- /mode')
@@ -355,11 +346,15 @@ def modeHandle(message):
             bot.send_message(message.chat.id, 'Mode penyiraman: manual')
     else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 08:00)')
 
+#Initialize Telebot API
+bot = telebot.TeleBot(TOKEN)
+
 def main():
     atexit.register(exit_handler)
     print('Bot listening ...')
     bot.add_custom_filter(custom_filters.ChatFilter())
     threading.Thread(bot.infinity_polling(timeout=20)).start()
+    bot.send_message(GROUP_ID, 'Bot aktif, silahkan masukkan command: (/pompa, /sensor, /mode)')
 
 if __name__ == '__main__':
     main()

@@ -4,7 +4,6 @@
 
 DFRobot_DHT20 dht20;
 String data;
-char c;
 const int power = 13;
 const int senSoilPin1 = A0;
 const int senSoilPin2 = A1;
@@ -47,14 +46,7 @@ int senTempt(int dTempt) {
     return rTempt;
   }
 }
-/*
-float mapf(float x, float in_min, float in_max, float out_min, float out_max)
-{
-  float mRes;
-  mRes = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  return mRes;
-}
-*/
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -73,8 +65,8 @@ void loop() {
     
     //fetch data Soil Sensor
     s1 = senSoil(1);
-    sc1 = map(s1, airMoistVal, waterMoistVal, 0, 100);
     s2 = senSoil(2);
+    sc1 = map(s1, airMoistVal, waterMoistVal, 0, 100);
     sc2 = map(s2, airMoistVal, waterMoistVal, 0, 100);   
     //fetch data Temperature Sensor
     if(!dht20.begin()){
