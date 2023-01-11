@@ -255,6 +255,9 @@ def dataFetch():
 def exit_handler():
     bot.send_message(GROUP_ID, 'Bot dinonaktifkan')
 
+#Initialize Telebot API
+bot = telebot.TeleBot(TOKEN)
+
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, 'List Command:\n- /pompa\n- /sensor\n- /mode')
@@ -346,8 +349,6 @@ def modeHandle(message):
             bot.send_message(message.chat.id, 'Mode penyiraman: manual')
     else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 08:00)')
 
-#Initialize Telebot API
-bot = telebot.TeleBot(TOKEN)
 
 def main():
     atexit.register(exit_handler)
