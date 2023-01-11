@@ -258,6 +258,9 @@ def exit_handler():
 #Initialize Telebot API
 bot = telebot.TeleBot(TOKEN)
 
+#Send message when bot active
+bot.send_message(GROUP_ID, 'Bot aktif, silahkan masukkan command /start atau /help untuk list command')
+
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, 'List Command:\n- /pompa\n- /sensor\n- /mode')
@@ -349,13 +352,12 @@ def modeHandle(message):
             bot.send_message(message.chat.id, 'Mode penyiraman: manual')
     else: bot.send_message(message.chat.id, 'Penggunaan:\n- /mode status (Menampilkan mode penyiraman)\n- /mode manual (Penyiraman manual)\n- /mode otomatis (Penyiraman otomatis setiap hari pada jam 08:00)')
 
-
 def main():
     atexit.register(exit_handler)
     print('Bot listening ...')
     bot.add_custom_filter(custom_filters.ChatFilter())
     threading.Thread(bot.infinity_polling(timeout=20)).start()
-    bot.send_message(GROUP_ID, 'Bot aktif, silahkan masukkan command: (/pompa, /sensor, /mode)')
+    
 
 if __name__ == '__main__':
     main()
