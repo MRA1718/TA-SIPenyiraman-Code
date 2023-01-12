@@ -5,15 +5,15 @@ import matplotlib.pyplot as plt
 
 soil1 = ctrl.Antecedent(np.arange(0, 100, 1), 'soil1')
 soil2 = ctrl.Antecedent(np.arange(0, 100, 1), 'soil2')
-temperature = ctrl.Antecedent(np.arange(15, 45, 1), 'temperature')
+temperature = ctrl.Antecedent(np.arange(20, 45, 1), 'temperature')
 humidity = ctrl.Antecedent(np.arange(0, 100, 1), 'humidity')
 light = ctrl.Antecedent(np.arange(0, 1000, 1), 'light')
 duration = ctrl.Consequent(np.arange(0, 180, 1), 'duration')
 
 #soil1
-soil1['kering'] = fuzz.trimf(soil1.universe, [0, 0, 40])
-soil1['lembab'] = fuzz.trimf(soil1.universe, [30, 60, 80])
-soil1['basah'] = fuzz.trimf(soil1.universe, [60, 100, 100])
+soil1['kering'] = fuzz.trapmf(soil1.universe, [0, 0, 30, 45])
+soil1['lembab'] = fuzz.trapmf(soil1.universe, [30, 50, 70, 85])
+soil1['basah'] = fuzz.trapmf(soil1.universe, [70, 80, 100, 100])
 
 #soil2
 soil2['kering'] = fuzz.trapmf(soil2.universe, [0, 0, 30, 45])
@@ -48,7 +48,7 @@ duration['lama'] = fuzz.trapmf(duration.universe, [105, 135, 180, 180])
 # drtn = ['pendek', 'sedang', 'lama']
 # duration.automf(names=drtn)
 
-soil2.view()
+duration.view()
 # soil2.view()
 
 input()
