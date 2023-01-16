@@ -207,10 +207,11 @@ def autoWatering():
     mycursor.close()
     mydb.close()
 
+#Function for reminder automatic watering
 def autoReminder():
     bot.send_message(GROUP_ID, 'Penyiraman otomatis akan dilakukan dalam 1 jam')
 
-#Function for scheduling sensor data fetch
+#Function for scheduling automatic watering
 def autoSchedWatering():
     global wtrMode
     schedule.every().day.at("08:00").do(autoWatering).tag('otomatis')
@@ -240,9 +241,7 @@ def dataFetch():
     dict_json = ""
     ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
     ser.reset_input_buffer()
-    #i=1
     while dict_json == "":
-    #while i <= 5:
         ser.write("collectdata\n".encode('utf-8'))
         data = ser.readline().decode("utf-8")
         try:
@@ -250,7 +249,6 @@ def dataFetch():
             return(dict_json)
         except json.JSONDecodeError as e:
             ("JSON:", e)
-        #i += 1
 
 def exit_handler():
     bot.send_message(GROUP_ID, 'Bot dinonaktifkan')
@@ -261,11 +259,12 @@ bot = telebot.TeleBot(TOKEN)
 #Send message when bot active
 bot.send_message(GROUP_ID, 'Bot aktif, silahkan masukkan command /start atau /help untuk list command')
 
+##Bot command list
+#Command /start and /help for list of command that can be used
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.send_message(message.chat.id, 'List Command:\n- /pompa\n- /sensor\n- /mode')
 
-#Bot command list
 #Command /pompa for manually relay control
 @bot.message_handler(commands=['pompa'])
 def pumpHandle(message):
@@ -358,6 +357,5 @@ def main():
     bot.add_custom_filter(custom_filters.ChatFilter())
     threading.Thread(bot.infinity_polling(timeout=20)).start()
     
-
 if __name__ == '__main__':
     main()
